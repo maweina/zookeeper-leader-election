@@ -1,0 +1,26 @@
+apply plugin: 'java'
+apply plugin:'application'
+
+version = '1.0'
+mainClassName = "com.occi.leader.election.Main"
+applicationName = 'occimon'
+
+dependencies {
+    compile 'org.apache.curator:curator-recipes:2.7.0'
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.21'
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}
+
+repositories {
+    mavenCentral()
+}
+
+//create a single Jar with all dependencies
+task fatJar(type: Jar) {
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+    manifest {
+        attributes 'Main-Class': 'com.occi.leader.election.Main'
+    }
+}
