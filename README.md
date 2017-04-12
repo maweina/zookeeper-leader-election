@@ -57,3 +57,9 @@ Archive:  occimon-1.0.zip
   inflating: occimon-1.0/bin/occimon.bat
 [root@hadoop1 distributions]# occimon-1.0/bin/occimon "hadoop1:2181,hadoop2:2181" "/test" /opt/logstash/bin/logstash -e 'input { stdin { } } output { stdout {} }
 ```
+
+### Cases
+* Start child process (logstash) if I am leader; give up leadership if failed to start child
+* If child is dead, give up leadership. My peers will elect a new leader.
+* If my connection to zookeeper is lost or suspended, kill child and give up leadership
+* If reconnected to zookeeper, I am still leader candidate

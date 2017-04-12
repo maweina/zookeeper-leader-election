@@ -3,10 +3,12 @@ package com.occi.leader.election;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.recipes.leader.CancelLeadershipException;
 import org.apache.curator.framework.recipes.leader.LeaderSelector;
 import org.apache.curator.framework.recipes.leader.LeaderSelectorListener;
 import org.apache.curator.framework.recipes.leader.LeaderSelectorListenerAdapter;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.curator.framework.state.ConnectionState;
 
 public class Main {
     public static String exec[];
@@ -30,6 +32,7 @@ public class Main {
         CuratorFramework client = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
 
         LeaderSelectorListener listener = new LeaderSelectorListenerAdapter() {
+            public Process child = null;
             public void takeLeadership(CuratorFramework client) throws Exception {
                 // this callback will get called when you are the leader
                 // do whatever leader work you need to and only exit
@@ -37,13 +40,28 @@ public class Main {
                 System.out.println("I'm the leader now ");
                 try {
                     System.out.println("Starting child");
-                    Process child = Runtime.getRuntime().exec(exec);
+                    child = Runtime.getRuntime().exec(exec);
                     // cause this process to stop until process child is terminated
                     child.waitFor();
-                    System.out.println("Child is down, exit");
-                    System.exit(1);
+                    System.out.println("Child is down, give up leadership");
+                    throw new CancelLeadershipException();
                 } catch (Exception  e) {
                     e.printStackTrace();
+                    System.out.println("Cannot start up child process, give up leadership");
+                    throw new CancelLeadershipException();
+                }
+            }
+
+            @Override
+            public void stateChanged(CuratorFramework client, ConnectionState newState)
+            {
+                if ( (newState == ConnectionState.SUSPENDED) || (newState == ConnectionState.LOST) )
+                {
+                    if (child != null) {
+                        System.out.println("Lost connection with zookeeper, kill child");
+                        child.destroy();
+                    }
+                    throw new CancelLeadershipException();
                 }
             }
         };
