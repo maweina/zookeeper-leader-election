@@ -5,22 +5,46 @@ Leader election using the Curator recipes with Zookeeper.
 
 ### Build
 This project has set up Gradle wrapper, whcih allows you to run a Gradle task without requiring that Gradle is installed.
-You can create the distribution from the root of the project.
+You can create the distribution(rpm, tar and zip packages) from the root of the project.
 ```
-[root@hadoop1 zookeeper-leader-election]# ./gradlew clean distZip
-:clean UP-TO-DATE
+[root@hadoop1 zookeeper-leader-election]# ./gradlew clean build buildRpm
+:clean
 :compileJava
 :processResources UP-TO-DATE
 :classes
 :jar
 :startScripts
+:distTar
 :distZip
+:assemble
+:compileTestJava UP-TO-DATE
+:processTestResources UP-TO-DATE
+:testClasses UP-TO-DATE
+:test UP-TO-DATE
+:check UP-TO-DATE
+:build
+:buildRpm
 
 BUILD SUCCESSFUL
 
-Total time: 10.165 secs
-[root@hadoop1 zookeeper-leader-election]# ll build/distributions/occimon-1.0.zip
--rwxrwxrwx. 1 vagrant vagrant 4789270 Apr 12 20:21 build/distributions/occimon-1.0.zip
+Total time: 13.444 secs
+[root@hadoop1 zookeeper-leader-election]# rpm -pql build/distributions/occimon-1.0.0.0.x86_64.rpm
+/opt/occimon-1.0.0.0
+/opt/occimon-1.0.0.0/bin
+/opt/occimon-1.0.0.0/bin/occimon
+/opt/occimon-1.0.0.0/bin/occimon.bat
+/opt/occimon-1.0.0.0/lib
+/opt/occimon-1.0.0.0/lib/curator-client-2.7.0.jar
+/opt/occimon-1.0.0.0/lib/curator-framework-2.7.0.jar
+/opt/occimon-1.0.0.0/lib/curator-recipes-2.7.0.jar
+/opt/occimon-1.0.0.0/lib/guava-16.0.1.jar
+/opt/occimon-1.0.0.0/lib/jline-0.9.94.jar
+/opt/occimon-1.0.0.0/lib/log4j-1.2.16.jar
+/opt/occimon-1.0.0.0/lib/netty-3.7.0.Final.jar
+/opt/occimon-1.0.0.0/lib/slf4j-api-1.7.21.jar
+/opt/occimon-1.0.0.0/lib/slf4j-simple-1.7.21.jar
+/opt/occimon-1.0.0.0/lib/zookeeper-3.4.6.jar
+/opt/occimon-1.0.0.0/lib/zookeper-leader-election-1.0.0.0.jar
 ```
 
 ### Usage
