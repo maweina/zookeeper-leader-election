@@ -63,5 +63,5 @@ ospackage {
 
 buildRpm {
     packageName = applicationName
-    into '/opt/' + packageName + '-' + version
+    into '/opt/' + packageName
 }
